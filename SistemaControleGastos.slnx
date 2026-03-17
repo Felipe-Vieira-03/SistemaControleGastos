@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SistemaControleGastos.API/SistemaControleGastos.API.csproj" />
+  <Project Path="SistemaControleGastos.Application/SistemaControleGastos.Application.csproj" />
+  <Project Path="SistemaControleGastos.Domain/SistemaControleGastos.Domain.csproj" />
+  <Project Path="SistemaControleGastos.Infrastructure/SistemaControleGastos.Infrastructure.csproj" />
+</Solution>
