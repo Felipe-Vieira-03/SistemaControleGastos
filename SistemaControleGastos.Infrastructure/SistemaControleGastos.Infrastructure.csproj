@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SistemaControleGastos.Application\SistemaControleGastos.Application.csproj" />
     <ProjectReference Include="..\SistemaControleGastos.Domain\SistemaControleGastos.Domain.csproj" />
   </ItemGroup>
 
