@@ -1,4 +1,5 @@
-﻿using SistemaControleGastos.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SistemaControleGastos.Domain.Entities;
 using SistemaControleGastos.Domain.Interfaces;
 using SistemaControleGastos.Infrastructure.Data;
 using System;
@@ -17,29 +18,41 @@ namespace SistemaControleGastos.Infrastructure.Repositories
 
         }
 
-        public Task CadastrarTransacaoAsync(Transacao transacao)
+        public async Task<bool> CadastrarTransacaoAsync(Transacao transacao)
         {
-            throw new NotImplementedException();
+            var ret = _db.Transacoes.Add(transacao);
+            await _db.SaveChangesAsync();
+            return ret is not null;
         }
 
-        public Task<bool> DeletarTransacaoAsync(int transacaoId)
+        public async Task<bool> DeletarTransacaoAsync(int transacaoId)
         {
-            throw new NotImplementedException();
+            var ret = await _db.Transacoes.Where(w => w.Id == transacaoId).ExecuteDeleteAsync();
+            return ret > 0;
         }
 
-        public Task<bool> EditarTransacaoAsync(Transacao transacao)
+        public async Task<bool> EditarTransacaoAsync(Transacao transacao)
         {
-            throw new NotImplementedException();
+            var ret = _db.Transacoes.Update(transacao);
+            await _db.SaveChangesAsync();
+            return ret is not null;
         }
 
-        public Task<List<Transacao>> ObterTodasTransacoesAsync()
+        public async Task<Transacao> ObterTransacaoPorIdAsync(int transacaoid)
         {
-            throw new NotImplementedException();
+            var transacao = await _db.Transacoes.Where(w => w.Id == transacaoid).FirstOrDefaultAsync();
+            return transacao;
+        }
+        public async Task<List<Transacao>> ObterTodasTransacoesAsync()
+        {
+            var listTransacoes = await _db.Transacoes.ToListAsync();
+            return listTransacoes;
         }
 
-        public Task<Transacao> ObterTransacaoAsync(int transacaoid)
+        public async Task<bool> TransacaoJaExiste(int transacaoId)
         {
-            throw new NotImplementedException();
+            return await _db.Transacoes.AnyAsync(w => w.Id == transacaoId);
         }
+
     }
 }

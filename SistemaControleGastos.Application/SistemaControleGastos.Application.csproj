@@ -10,8 +10,4 @@
     <ProjectReference Include="..\SistemaControleGastos.Domain\SistemaControleGastos.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

@@ -1,4 +1,5 @@
-﻿using SistemaControleGastos.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SistemaControleGastos.Domain.Entities;
 using SistemaControleGastos.Domain.Interfaces;
 using SistemaControleGastos.Infrastructure.Data;
 
@@ -12,30 +13,39 @@ namespace SistemaControleGastos.Infrastructure.Repositories
         {
             _db = db;
         }
-
-        public Task CadastrarCategoriaAsync(Categoria categoria)
+        public async Task<bool> CadastrarCategoriaAsync(Categoria categoria)
         {
-            throw new NotImplementedException();
+            var ret = _db.Categorias.Add(categoria);
+            await _db.SaveChangesAsync();
+            return ret is not null;
+        }
+        public async Task<bool> DeletarCategoriaAsync(int categoriaId)
+        {
+            var ret = await _db.Categorias.Where(w => w.Id == categoriaId).ExecuteDeleteAsync();
+            return ret > 0;
         }
 
-        public Task<bool> DeletarCategoriaAsync(int categoriaId)
+        public async Task<bool> EditarCategoriaAsync(Categoria categoria)
         {
-            throw new NotImplementedException();
+            var ret = _db.Categorias.Update(categoria);
+            await _db.SaveChangesAsync();
+            return ret is not null;
         }
 
-        public Task<bool> EditarCategoriaAsync(Categoria categoria)
+        public async Task<Categoria> ObterCategoriaPorIdAsync(int categoriaId)
         {
-            throw new NotImplementedException();
+            var categoria = await _db.Categorias.Where(w => w.Id == categoriaId).FirstOrDefaultAsync();
+            return categoria;
         }
 
-        public Task<Categoria> ObterCategoriaAsync(int categoriaId)
+        public async Task<List<Categoria>> ObterTodasCategoriasAsync()
         {
-            throw new NotImplementedException();
+            var listCategorias = await _db.Categorias.ToListAsync();
+            return listCategorias;
         }
-
-        public Task<List<Categoria>> ObterTodasCategoriasAsync()
+        public async Task<bool> CategoriaJaExiste(int categoriaId)
         {
-            throw new NotImplementedException();
+            return await _db.Categorias.AnyAsync(w => w.Id == categoriaId);
         }
     }
 }

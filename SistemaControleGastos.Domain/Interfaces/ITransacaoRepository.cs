@@ -4,10 +4,11 @@ namespace SistemaControleGastos.Domain.Interfaces
 {
     public interface ITransacaoRepository
     {
-        Task CadastrarTransacaoAsync(Transacao transacao);
+        Task<bool> CadastrarTransacaoAsync(Transacao transacao);
         Task<bool> EditarTransacaoAsync(Transacao transacao);
         Task<bool> DeletarTransacaoAsync(int transacaoId);
         Task<List<Transacao>> ObterTodasTransacoesAsync();
-        Task<Transacao> ObterTransacaoAsync(int transacaoid);
+        Task<Transacao> ObterTransacaoPorIdAsync(int transacaoid);
+        Task<bool> TransacaoJaExiste(int transacaoId);
     }
 }
