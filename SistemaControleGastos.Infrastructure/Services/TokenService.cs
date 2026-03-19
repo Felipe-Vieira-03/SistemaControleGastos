@@ -12,11 +12,16 @@ namespace SistemaControleGastos.Infrastructure.Services
 {
     public class TokenService : ITokenService
     {
+        private readonly JwtConfig _configJwt;
+        public TokenService(IOptions<JwtConfig> configJwt)
+        {
+            _configJwt = configJwt.Value;
+        }
+
         public string GerarToken(int id, string email, DateTime dataCadastro)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes("ch4v3S3cr3t4**JWT-2026&%##");
-
+            var key = Encoding.UTF8.GetBytes(_configJwt.ChaveToken);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
@@ -24,7 +29,7 @@ namespace SistemaControleGastos.Infrastructure.Services
                 new Claim(nameof(TokenDto.Email), email),
                 new Claim(nameof(TokenDto.DataCadastro), dataCadastro.ToString("o")),
             }),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddHours(_configJwt.ExpiracaoHoras),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

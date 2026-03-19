@@ -21,7 +21,8 @@ namespace SistemaControleGastos.API.Extensions
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
-
+           var section = configuration.GetSection("JwtConfig");
+           services.Configure<JwtConfig>(section);
 
            services.AddScoped<UsuarioService>();
            services.AddScoped<PessoaService>();
@@ -99,9 +100,9 @@ namespace SistemaControleGastos.API.Extensions
 
         public static IServiceCollection AddJWTConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            var secretKey = configuration["JwtSettings:SecretKey"];
+            var chaveToken = configuration["JwtConfig:ChaveToken"];
 
-            var key = Encoding.UTF8.GetBytes(secretKey);
+            var key = Encoding.UTF8.GetBytes(chaveToken);
 
             services.AddAuthentication(options =>
             {

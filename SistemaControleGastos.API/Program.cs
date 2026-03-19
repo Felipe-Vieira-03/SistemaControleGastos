@@ -1,4 +1,6 @@
 using SistemaControleGastos.API.Extensions;
+using SistemaControleGastos.API.Middleware;
+using SistemaControleGastos.API.Middlewares;
 using SistemaControleGastos.Domain.Interfaces;
 using SistemaControleGastos.Infrastructure.Repositories;
 
@@ -26,11 +28,15 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseCors("DefaultCors")
-   .UseHttpsRedirection()
-   .UseAuthentication()
-   .UseAuthorization();
+app.UseMiddleware<MiddlewareRequests>();
 
+app.UseCors("DefaultCors");
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseMiddleware<JwtMiddleware>();
 app.MapControllers();
 
 app.Run();

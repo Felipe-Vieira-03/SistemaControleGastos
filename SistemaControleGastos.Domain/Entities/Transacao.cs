@@ -15,4 +15,5 @@ namespace SistemaControleGastos.Domain.Entities
         public int PessoaId { get;set; }
 
     }
+
 }
