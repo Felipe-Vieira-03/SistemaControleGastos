@@ -28,7 +28,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseMiddleware<MiddlewareRequests>();
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors("DefaultCors");
 app.UseHttpsRedirection();
