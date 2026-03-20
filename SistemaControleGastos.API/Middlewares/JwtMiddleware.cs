@@ -16,6 +16,8 @@ namespace SistemaControleGastos.API.Middlewares
         }
         public async Task Invoke(HttpContext context, TokenDto _token)
         {
+            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+            Console.WriteLine("HEADER: " + authHeader);
             if (context.User.Identity.IsAuthenticated)
             {
                 _token.Id = int.Parse(context.User.FindFirst(nameof(TokenDto.Id)).Value);
