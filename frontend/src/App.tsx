@@ -1,33 +1,184 @@
-import React from "react";
+"use client";
 
-function Login() {
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, LogIn, LogOut, User } from "lucide-react";
+import Login from "@/pages/Login";
+import CadastroUsuario from "@/pages/Usuario";
+import HomeScreen from "@/pages/Home";
+import PessoaPage from "@/pages/Pessoa";
+import CategoriaPage from "@/pages/Categoria";
+import TransacaoPage from "@/pages/Transacao";
+import type { Usuario } from "./lib/types";
 
-  async function fazerLogin() {
-    const response = await fetch("https://localhost:44373/api/usuario/AuthAsync", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: "zed",
-        password: "123"
-      })
-    });
 
-    const data = await response.json();
+type Pagina = "home" | "login" | "cadastro-usuario" | "pessoa" | "categoria" | "transacao";
 
-    console.log(data);
+export default function App() {
+  const [pagina, setPagina] = useState<Pagina>("home");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+
+  function handleLoginSuccess() {
+    // setUsuario(u);
+    setPagina("home");
   }
 
-  return (
-    <div>
-      <h2>Login</h2>
+  function handleLogout() {
+    setUsuario(usuario);
+    setPagina("home");
+    setMenuOpen(false);
+  }
 
-      <button onClick={fazerLogin}>
-        Fazer Login
-      </button>
+  function navegar(p: Pagina) {
+    setPagina(p);
+    setMenuOpen(false);
+  }
+
+  const renderPagina = () => {
+    switch (pagina) {
+      case "login":
+        return (
+          <Login
+            onLoginSuccess={handleLoginSuccess}
+            onIrParaCadastro={() => setPagina("cadastro-usuario")}
+          />
+        );
+      case "cadastro-usuario":
+        return (
+          <CadastroUsuario
+            onCadastroSucesso={() => setPagina("login")}
+            onVoltar={() => setPagina("login")}
+          />
+        );
+      case "pessoa":
+        return <PessoaPage />;
+      case "categoria":
+        return <CategoriaPage />;
+      case "transacao":
+        return <TransacaoPage />;                
+      case "home":
+      default:
+        // if (!usuario) {
+        //   return <HomeScreen onIrParaLogin={() => setPagina("login")} />;
+        // }
+        return (
+          <div className="flex min-h-[80vh] flex-col items-center justify-center gap-4 px-4 text-center">
+            <h1 className="text-3xl font-bold text-foreground">
+              Olá!
+            </h1>
+            <p className="text-muted-foreground">
+              Utilize o menu para navegar pelo sistema.
+            </p>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background font-sans">
+      {/* Header */}
+      <header className="sticky top-0 z-40 flex h-14 items-center border-b bg-background px-4">
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Abrir menu">
+              <Menu className="size-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <SheetHeader className="border-b px-6 py-4">
+              <SheetTitle className="text-left">Menu</SheetTitle>
+            </SheetHeader>
+
+            <nav className="flex flex-col gap-1 p-4">
+              {usuario == null? (
+                <>
+                  {/* Info do usuário logado */}
+                  <div className="mb-2 flex items-center gap-3 rounded-md bg-muted px-3 py-2">
+                    <User className="size-4 shrink-0 text-muted-foreground" />
+                    <div className="flex flex-col overflow-hidden">
+                      {/* <span className="truncate text-xs text-muted-foreground">{usuario.email}</span> */}
+                    </div>
+                  </div>
+
+                  <Separator className="my-2" />
+
+                  <Button
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => navegar("home")}
+                  >
+                    Início
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => navegar("pessoa")}
+                  >
+                    Pessoas
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => navegar("categoria")}
+                  >
+                    Categorias
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => navegar("transacao")}
+                  >
+                    Transações
+                  </Button>
+
+                  <Separator className="my-2" />
+
+                  <Button
+                    variant="ghost"
+                    className="justify-start text-destructive hover:text-destructive"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="size-4 mr-2" />
+                    Sair
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => navegar("login")}
+                >
+                  <LogIn className="size-4 mr-2" />
+                  Login
+                </Button>
+              )}
+            </nav>
+          </SheetContent>
+        </Sheet>
+
+        <span className="ml-3 font-semibold text-foreground">Meu Sistema</span>
+
+        {/* Botão de logout / login no header */}
+        <div className="ml-auto">
+          {usuario ? (
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="size-4 mr-2" />
+              Sair
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => setPagina("login")}>
+              <LogIn className="size-4 mr-2" />
+              Login
+            </Button>
+          )}
+        </div>
+      </header>
+
+      {/* Conteúdo */}
+      <main>{renderPagina()}</main>
     </div>
   );
 }
-
-export default Login;

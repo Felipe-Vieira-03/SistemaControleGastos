@@ -11,6 +11,11 @@ namespace SistemaControleGastos.Infrastructure.Data.ContextConfig
     {
         public void Configure(EntityTypeBuilder<Transacao> builder)
         {
+            builder.HasOne<Usuario>()
+                .WithMany()
+                .HasForeignKey(t => t.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasOne<Pessoa>()
                 .WithMany()
                 .HasForeignKey(t => t.PessoaId)
@@ -20,6 +25,8 @@ namespace SistemaControleGastos.Infrastructure.Data.ContextConfig
                 .WithMany()
                 .HasForeignKey(t => t.CategoriaId)
                 .OnDelete(DeleteBehavior.Cascade);
-        }
+
+            builder.Property(p => p.Valor).HasPrecision(20, 4);
+       }
     }
 }

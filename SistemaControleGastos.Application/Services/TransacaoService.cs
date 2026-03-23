@@ -1,4 +1,6 @@
-﻿using SistemaControleGastos.Domain.Entities;
+﻿using MathNet.Numerics.Distributions;
+using SistemaControleGastos.Domain.DTOs;
+using SistemaControleGastos.Domain.Entities;
 using SistemaControleGastos.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,45 +11,48 @@ namespace SistemaControleGastos.Application.Services
     public class TransacaoService
     {
         private readonly ITransacaoRepository _repo;
+        private readonly TokenDto _token;
 
-        public TransacaoService(ITransacaoRepository repo)
+        public TransacaoService(ITransacaoRepository repo, TokenDto token)
         {
             _repo = repo;
+            _token = token;
         }
-        public async Task<bool> CadastrarTransacaoAsync(Transacao Transacao)
+        public async Task<bool> CadastrarTransacaoAsync(Transacao transacao)
         {
-            var TransacaoExiste = await _repo.TransacaoJaExiste(Transacao.Id);
-            if (TransacaoExiste)
+            transacao.UsuarioId = _token.Id;
+            var transacaoExiste = await _repo.TransacaoJaExiste(transacao.Id);
+            if (transacaoExiste)
                 throw new Exception("Transação já existe");
 
-            var ret = await _repo.CadastrarTransacaoAsync(Transacao);
+            var ret = await _repo.CadastrarTransacaoAsync(transacao);
             return ret;
         }
-        public async Task<bool> DeletarTransacaoAsync(int TransacaoId)
+        public async Task<bool> DeletarTransacaoAsync(int transacaoId)
         {
-            var TransacaoExiste = await _repo.TransacaoJaExiste(TransacaoId);
-            if (!TransacaoExiste)
+            var transacaoExiste = await _repo.TransacaoJaExiste(transacaoId);
+            if (!transacaoExiste)
                 throw new Exception("Transação não encontrada");
-            var ret = await _repo.DeletarTransacaoAsync(TransacaoId);
+            var ret = await _repo.DeletarTransacaoAsync(transacaoId);
             return ret;
 
         }
-        public async Task<bool> EditarTransacaoAsync(Transacao Transacao)
+        public async Task<bool> EditarTransacaoAsync(Transacao transacao)
         {
-            var TransacaoExiste = await _repo.TransacaoJaExiste(Transacao.Id);
-            if (!TransacaoExiste)
+            var transacaoExiste = await _repo.TransacaoJaExiste(transacao.Id);
+            if (!transacaoExiste)
                 throw new Exception("Transação não encontrada");
 
-            var ret = await _repo.EditarTransacaoAsync(Transacao);
+            var ret = await _repo.EditarTransacaoAsync(transacao);
             return ret;
         }
 
-        public async Task<Transacao> ObterTransacaoPorIdAsync(int TransacaoId)
+        public async Task<Transacao> ObterTransacaoPorIdAsync(int transacaoId)
         {
-            var Transacao = await _repo.ObterTransacaoPorIdAsync(TransacaoId);
-            if (Transacao is null)
+            var transacao = await _repo.ObterTransacaoPorIdAsync(transacaoId);
+            if (transacao is null)
                 throw new Exception("Transação não encontrada");
-            return Transacao;
+            return transacao;
 
         }
 

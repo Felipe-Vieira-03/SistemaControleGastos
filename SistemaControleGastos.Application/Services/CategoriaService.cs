@@ -1,5 +1,7 @@
-﻿using SistemaControleGastos.Domain.Entities;
+﻿using SistemaControleGastos.Domain.DTOs;
+using SistemaControleGastos.Domain.Entities;
 using SistemaControleGastos.Domain.Interfaces;
+using SistemaControleGastos.Domain.Interfaces.Service;
 
 
 namespace SistemaControleGastos.Application.Services
@@ -7,13 +9,16 @@ namespace SistemaControleGastos.Application.Services
     public class CategoriaService
     {
         private readonly ICategoriaRepository _repo;
-        public CategoriaService(ICategoriaRepository repo)
+        private readonly TokenDto _token;
+        public CategoriaService(ICategoriaRepository repo, TokenDto token)
         {
             _repo = repo;
+            _token = token;
         }
 
         public async Task<bool> CadastrarCategoriaAsync(Categoria categoria)
         {
+            categoria.UsuarioId = _token.Id;
             var categoriaExiste = await _repo.CategoriaJaExiste(categoria.Id);
             if (categoriaExiste)
                 throw new Exception("Categoria já existe");

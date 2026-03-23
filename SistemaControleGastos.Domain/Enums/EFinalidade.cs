@@ -11,9 +11,9 @@ namespace SistemaControleGastos.Domain.Enums
         Despesa = 1,
 
         [Description("Receita")]
-        Receita = 1,
+        Receita = 2,
 
         [Description("Ambas")]
-        Ambas = 1,
+        Ambas = 3,
     }
 }

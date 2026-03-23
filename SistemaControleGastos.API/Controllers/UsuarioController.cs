@@ -25,17 +25,17 @@ namespace SistemaControleGastos.API.Controllers
         public async Task<IActionResult> AuthAsync([FromBody] LoginRequest login)
         {
             var obj = await _service.AutenticacaoAsync(login.Email, login.Password);
-            return Ok(obj);
+            return Ok(new { token = obj });
         }
     
-        [HttpPost(UsuarioAPI.CadastrarUsuario)]
+        [HttpPost(UsuarioAPI.CadastrarUsuarioAsync)]
         [AllowAnonymous]
-        public async Task<IActionResult> CadastrarUsuario([FromBody] Usuario usuario)
+        public async Task<IActionResult> CadastrarUsuarioAsync([FromBody] Usuario usuario)
         {
-            var obj = await _service.CadastrarUsuario(usuario);
-            return Ok(obj);
+            var obj = await _service.CadastrarUsuarioAsync(usuario);
+            return Ok(new { token = obj });
         }
-        [HttpPost(UsuarioAPI.ObterUsuarioPorId)]
+        [HttpPost(UsuarioAPI.ObterUsuarioPorIdAsync)]
         [AllowAnonymous]
         public async Task<IActionResult> ObterUsuarioPorId([FromQuery] int usuarioId)
         {

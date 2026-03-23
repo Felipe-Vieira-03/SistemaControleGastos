@@ -15,7 +15,7 @@ namespace SistemaControleGastos.Infrastructure.Data.ContextConfig
             {
                 new Usuario {
                     Id = 1,
-                    Email = "Zed",
+                    Email = "zed@gmail.com",
                     SenhaHash = "83Ih5tGX1iS3Oz8pB/+Hqg==",
                     DataCadastro = DateTime.Now,
                 },

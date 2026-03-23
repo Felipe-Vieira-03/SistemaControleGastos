@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SistemaControleGastos.Domain.DTOs;
 using SistemaControleGastos.Domain.Entities;
 using SistemaControleGastos.Domain.Interfaces;
 using SistemaControleGastos.Infrastructure.Data;
@@ -11,11 +12,12 @@ namespace SistemaControleGastos.Infrastructure.Repositories
     public class TransacaoRepository : ITransacaoRepository
     {
         private readonly AppDbContext _db;
+        public readonly TokenDto _token;
 
-        public TransacaoRepository(AppDbContext db)
+        public TransacaoRepository(AppDbContext db, TokenDto token)
         {
             _db = db;
-
+            _token = token;
         }
 
         public async Task<bool> CadastrarTransacaoAsync(Transacao transacao)
@@ -27,7 +29,7 @@ namespace SistemaControleGastos.Infrastructure.Repositories
 
         public async Task<bool> DeletarTransacaoAsync(int transacaoId)
         {
-            var ret = await _db.Transacoes.Where(w => w.Id == transacaoId).ExecuteDeleteAsync();
+            var ret = await _db.Transacoes.Where(w => w.UsuarioId == _token.Id && w.Id == transacaoId).ExecuteDeleteAsync();
             return ret > 0;
         }
 
@@ -40,18 +42,18 @@ namespace SistemaControleGastos.Infrastructure.Repositories
 
         public async Task<Transacao> ObterTransacaoPorIdAsync(int transacaoid)
         {
-            var transacao = await _db.Transacoes.Where(w => w.Id == transacaoid).FirstOrDefaultAsync();
+            var transacao = await _db.Transacoes.Where(w => w.UsuarioId == _token.Id && w.Id == transacaoid).FirstOrDefaultAsync();
             return transacao;
         }
         public async Task<List<Transacao>> ObterTodasTransacoesAsync()
         {
-            var listTransacoes = await _db.Transacoes.ToListAsync();
+            var listTransacoes = await _db.Transacoes.Where(w => w.UsuarioId == _token.Id).ToListAsync();
             return listTransacoes;
         }
 
         public async Task<bool> TransacaoJaExiste(int transacaoId)
         {
-            return await _db.Transacoes.AnyAsync(w => w.Id == transacaoId);
+            return await _db.Transacoes.AnyAsync(w => w.UsuarioId == _token.Id && w.Id == transacaoId);
         }
 
     }

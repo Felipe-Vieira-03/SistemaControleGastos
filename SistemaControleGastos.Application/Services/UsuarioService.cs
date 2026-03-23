@@ -20,9 +20,11 @@ namespace SistemaControleGastos.Application.Services
             _token = token;
         }
 
-        public async Task<bool> CadastrarUsuario(Usuario usuario)
+        public async Task<bool> CadastrarUsuarioAsync(Usuario usuario)
         {
-            var ret = await _repo.CadastrarUsuario(usuario);
+            usuario.DataCadastro = DateTime.Now;
+            usuario.SenhaHash = _cripto.EncryptString(usuario.SenhaHash);
+            var ret = await _repo.CadastrarUsuarioAsync(usuario);
             return ret;
         }
 

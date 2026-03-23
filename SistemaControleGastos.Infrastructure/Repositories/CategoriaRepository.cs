@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SistemaControleGastos.Domain.DTOs;
 using SistemaControleGastos.Domain.Entities;
 using SistemaControleGastos.Domain.Interfaces;
 using SistemaControleGastos.Infrastructure.Data;
@@ -8,10 +9,13 @@ namespace SistemaControleGastos.Infrastructure.Repositories
     public class CategoriaRepository : ICategoriaRepository
     {
         private readonly AppDbContext _db;
+        public readonly TokenDto _token;
 
-        public CategoriaRepository(AppDbContext db)
+        public CategoriaRepository(AppDbContext db, TokenDto token)
         {
             _db = db;
+            _token = token;
+
         }
         public async Task<bool> CadastrarCategoriaAsync(Categoria categoria)
         {
@@ -21,7 +25,7 @@ namespace SistemaControleGastos.Infrastructure.Repositories
         }
         public async Task<bool> DeletarCategoriaAsync(int categoriaId)
         {
-            var ret = await _db.Categorias.Where(w => w.Id == categoriaId).ExecuteDeleteAsync();
+            var ret = await _db.Categorias.Where(w => w.UsuarioId == _token.Id && w.Id == categoriaId).ExecuteDeleteAsync();
             return ret > 0;
         }
 
@@ -34,18 +38,18 @@ namespace SistemaControleGastos.Infrastructure.Repositories
 
         public async Task<Categoria> ObterCategoriaPorIdAsync(int categoriaId)
         {
-            var categoria = await _db.Categorias.Where(w => w.Id == categoriaId).FirstOrDefaultAsync();
+            var categoria = await _db.Categorias.Where(w => w.UsuarioId == _token.Id && w.Id == categoriaId).FirstOrDefaultAsync();
             return categoria;
         }
 
         public async Task<List<Categoria>> ObterTodasCategoriasAsync()
         {
-            var listCategorias = await _db.Categorias.ToListAsync();
+            var listCategorias = await _db.Categorias.Where(w => w.UsuarioId == _token.Id).ToListAsync();
             return listCategorias;
         }
         public async Task<bool> CategoriaJaExiste(int categoriaId)
         {
-            return await _db.Categorias.AnyAsync(w => w.Id == categoriaId);
+            return await _db.Categorias.AnyAsync(w => w.UsuarioId == _token.Id && w.Id == categoriaId);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using SistemaControleGastos.Domain.Entities;
+﻿using MathNet.Numerics.Distributions;
+using SistemaControleGastos.Domain.DTOs;
+using SistemaControleGastos.Domain.Entities;
 using SistemaControleGastos.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,14 +11,18 @@ namespace SistemaControleGastos.Application.Services
     public class PessoaService
     {
         private readonly IPessoaRepository _repo;
+        private readonly TokenDto _token;
 
-        public PessoaService(IPessoaRepository repo)
+        public PessoaService(IPessoaRepository repo, TokenDto token)
         {
             _repo = repo;
+            _token = token;
+
         }
 
         public async Task<bool> CadastrarPessoaAsync(Pessoa pessoa)
         {
+            pessoa.UsuarioId = _token.Id;
             var pessoaExiste = await _repo.PessoaJaExiste(pessoa.Id);
             if (pessoaExiste)
                 throw new Exception("Pessoa já existe");

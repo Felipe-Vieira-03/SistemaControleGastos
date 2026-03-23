@@ -15,7 +15,7 @@ namespace SistemaControleGastos.Infrastructure.Repositories
         {
             _db = db;
         }
-        public async Task<bool> CadastrarUsuario(Usuario usuario)
+        public async Task<bool> CadastrarUsuarioAsync(Usuario usuario)
         {
             var ret = _db.Usuarios.Add(usuario);
             await _db.SaveChangesAsync();
