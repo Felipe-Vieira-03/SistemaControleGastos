@@ -1,75 +1,87 @@
 import { useState } from "react";
-import { apiFetch } from "../services/api";
-
-const EFinalidade = {
-  Despesa: 1,
-  Receita: 2,
-  Ambas: 3,
-} as const;
-
-type EFinalidade = (typeof EFinalidade)[keyof typeof EFinalidade];
+import { apiFetch } from "@/services/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { EFinalidade } from "@/lib/types";
 
 export default function Categoria() {
   const [descricaoCategoria, setDescricaoCategoria] = useState("");
   const [finalidade, setFinalidade] = useState<EFinalidade>(EFinalidade.Despesa);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
 
-  async function cadastrar() {
-    await apiFetch("/Categoria/CadastrarCategoriaAsync", {
-      method: "POST",
-      body: JSON.stringify({
-        descricaoCategoria,
-        finalidade,
-      }),
-    });
-
-    setDescricaoCategoria("");
-    setFinalidade(EFinalidade.Despesa);
+  async function cadastrar(e: React.FormEvent) {
+    e.preventDefault();
+    setErro("");
+    setSucesso("");
+    setLoading(true);
+    try {
+      await apiFetch("/Categoria/CadastrarCategoriaAsync", {
+        method: "POST",
+        body: JSON.stringify({ descricaoCategoria, finalidade }),
+      });
+      setSucesso("Categoria cadastrada com sucesso!");
+      setDescricaoCategoria("");
+      setFinalidade(EFinalidade.Despesa);
+    } catch {
+      setErro("Erro ao cadastrar categoria.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md space-y-6">
+    <div className="flex justify-center py-10 px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">Cadastro de Categoria</CardTitle>
+          <CardDescription>Preencha os dados para cadastrar uma categoria.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={cadastrar} className="flex flex-col gap-4">
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="descricao">Descrição</FieldLabel>
+                <Input
+                  id="descricao"
+                  type="text"
+                  placeholder="Descrição da categoria"
+                  value={descricaoCategoria}
+                  maxLength={400}
+                  onChange={(e) => setDescricaoCategoria(e.target.value)}
+                  required
+                />
+                <span className="text-xs text-muted-foreground text-right">{descricaoCategoria.length}/400</span>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="finalidade">Finalidade</FieldLabel>
+                <select
+                  id="finalidade"
+                  value={finalidade}
+                  onChange={(e) => setFinalidade(Number(e.target.value) as EFinalidade)}
+                  className="h-8 w-full rounded-lg border border-input bg-white px-2.5 py-1 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  <option value={EFinalidade.Despesa}>Despesa</option>
+                  <option value={EFinalidade.Receita}>Receita</option>
+                  <option value={EFinalidade.Ambas}>Ambas</option>
+                </select>
+              </Field>
+            </FieldGroup>
 
-        <h1 className="text-2xl font-semibold text-gray-800 text-center">
-          Cadastro de Categoria
-        </h1>
+            {erro && <p className="text-sm text-destructive">{erro}</p>}
+            {sucesso && <p className="text-sm text-green-600">{sucesso}</p>}
 
-        <div className="space-y-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Descrição da categoria
-          </label>
-          <input
-            type="text"
-            value={descricaoCategoria}
-            placeholder="Descrição da categoria"
-            onChange={(e) => setDescricaoCategoria(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-          Finalidade
-          </label>          
-          <select
-            value={finalidade}
-            onChange={(e) =>
-              setFinalidade(Number(e.target.value) as EFinalidade)
-            }
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value={EFinalidade.Despesa}>Despesa</option>
-            <option value={EFinalidade.Receita}>Receita</option>
-            <option value={EFinalidade.Ambas}>Ambas</option>
-          </select>
-        </div>
-
-        <button
-          onClick={cadastrar}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
-        >
-          Cadastrar
-        </button>
-
-      </div>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading && <Spinner className="size-4 mr-2" />}
+              Cadastrar
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,60 +1,85 @@
 import { useState } from "react";
-import { apiFetch } from "../services/api";
-
+import { apiFetch } from "@/services/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function Pessoa() {
-  const [nome, setNome] = useState<string>("");
-  const [idade, setIdade] = useState<number>(0);
+  const [nome, setNome] = useState("");
+  const [idade, setIdade] = useState<number | "">("");
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
 
-  async function cadastrar() {
-    await apiFetch<{ success: boolean }>("/Pessoa/CadastrarPessoaAsync", {
-      method: "POST",
-      body: JSON.stringify({ nome, idade }),
-    });
-    setNome("");
+  async function cadastrar(e: React.FormEvent) {
+    e.preventDefault();
+    setErro("");
+    setSucesso("");
+    setLoading(true);
+    try {
+      await apiFetch("/Pessoa/CadastrarPessoaAsync", {
+        method: "POST",
+        body: JSON.stringify({ nome, idade }),
+      });
+      setSucesso("Pessoa cadastrada com sucesso!");
+      setNome("");
+      setIdade("");
+    } catch {
+      setErro("Erro ao cadastrar pessoa.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md space-y-6">
+    <div className="flex justify-center py-10 px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">Cadastro de Pessoa</CardTitle>
+          <CardDescription>Preencha os dados para cadastrar uma pessoa.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={cadastrar} className="flex flex-col gap-4">
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="nome">Nome</FieldLabel>
+                <Input
+                  id="nome"
+                  type="text"
+                  placeholder="Nome completo"
+                  value={nome}
+                  maxLength={200}
+                  onChange={(e) => setNome(e.target.value)}
+                  required
+                />
+                <span className="text-xs text-muted-foreground text-right">{nome.length}/200</span>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="idade">Idade</FieldLabel>
+                <Input
+                  id="idade"
+                  type="number"
+                  placeholder="Idade"
+                  value={idade}
+                  min={0}
+                  onChange={(e) => setIdade(e.target.valueAsNumber)}
+                  required
+                />
+              </Field>
+            </FieldGroup>
 
-        <h1 className="text-2xl font-semibold text-gray-800 text-center">
-          Cadastro de Pessoa
-        </h1>
+            {erro && <p className="text-sm text-destructive">{erro}</p>}
+            {sucesso && <p className="text-sm text-green-600">{sucesso}</p>}
 
-        <div className="space-y-4">
-
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nome
-          </label>
-          <input
-            type="text"
-            value={nome}
-            placeholder="Nome"
-            onChange={(e) => setNome(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Idade
-          </label>
-          <input
-            type="number"
-            value={idade}
-            placeholder="Idade"
-            onChange={(e) => setIdade(e.target.valueAsNumber)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          onClick={cadastrar}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
-        >
-          Cadastrar
-        </button>
-
-      </div>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading && <Spinner className="size-4 mr-2" />}
+              Cadastrar
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

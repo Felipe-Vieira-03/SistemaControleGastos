@@ -7,6 +7,7 @@ import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { apiFetch } from "@/services/api";
+import { Wallet } from "lucide-react";
 
 interface CadastroUsuarioProps {
   onCadastroSucesso: () => void;
@@ -22,13 +23,12 @@ export default function CadastroUsuario({ onCadastroSucesso, onVoltar }: Cadastr
   async function handleCadastro(e: React.FormEvent) {
     e.preventDefault();
     setErro("");
-
     setLoading(true);
     try {
       const response = await apiFetch<boolean>("/Usuario/CadastrarUsuarioAsync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({email, SenhaHash }),
+        body: JSON.stringify({ email, SenhaHash }),
       });
       if (!response) {
         setErro("Erro ao cadastrar. Tente novamente.");
@@ -43,13 +43,20 @@ export default function CadastroUsuario({ onCadastroSucesso, onVoltar }: Cadastr
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Criar conta</CardTitle>
-          <CardDescription>
-            Preencha os dados para criar sua conta.
-          </CardDescription>
+    <div className="w-full max-w-sm">
+      {/* Brand */}
+      <div className="flex flex-col items-center mb-8">
+        <div className="size-12 rounded-2xl bg-indigo-500 flex items-center justify-center mb-3 shadow-lg shadow-indigo-500/30">
+          <Wallet className="size-6 text-white" />
+        </div>
+        <span className="font-bold text-slate-800 text-lg">ControleGastos</span>
+        <span className="text-slate-400 text-sm mt-0.5">Controle financeiro simples</span>
+      </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xl font-bold">Criar conta</CardTitle>
+          <CardDescription>Preencha os dados para criar sua conta.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleCadastro} className="flex flex-col gap-4">
@@ -75,16 +82,14 @@ export default function CadastroUsuario({ onCadastroSucesso, onVoltar }: Cadastr
                   onChange={(e) => setSenha(e.target.value)}
                   required
                 />
-              </Field>              
+              </Field>
             </FieldGroup>
 
-            {erro && (
-              <p className="text-sm text-destructive">{erro}</p>
-            )}
+            {erro && <p className="text-sm text-destructive">{erro}</p>}
 
             <Button type="submit" disabled={loading} className="w-full">
-              {loading && <Spinner className="size-4 mr-2" />}
-              Cadastrar
+              {loading && <Spinner className="size-4 mr-1" />}
+              Criar conta
             </Button>
 
             <Button
