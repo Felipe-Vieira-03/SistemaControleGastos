@@ -1,6 +1,6 @@
 import { apiFetch } from "@/services/api";
 import { useEffect, useState } from "react";
-import type { Categoria} from "@/lib/types";
+import type { Categoria } from "@/lib/types";
 import type { Pessoa } from "@/lib/types";
 import type { Transacao } from "@/lib/types";
 import { EFinalidade } from "@/lib/types";
@@ -46,7 +46,7 @@ export default function Transacao() {
       method: "POST",
       body: JSON.stringify(payload),
     });
-   
+
   }
 
   return (
@@ -57,6 +57,9 @@ export default function Transacao() {
         </h1>
 
         <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Descrição da transação
+          </label>
           <input
             type="text"
             value={descricao}
@@ -65,6 +68,10 @@ export default function Transacao() {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Valor
+          </label>
+
           <input
             type="number"
             value={valor}
@@ -72,6 +79,9 @@ export default function Transacao() {
             onChange={(e) => setValor(Number(e.target.value))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Quem efetuou a movimentação?
+          </label>
 
           <select
             value={pessoaId}
@@ -86,6 +96,9 @@ export default function Transacao() {
             ))}
           </select>
 
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Com o que?
+          </label>
           <select
             value={categoriaId}
             onChange={(e) => setCategoriaId(Number(e.target.value))}
@@ -98,7 +111,9 @@ export default function Transacao() {
               </option>
             ))}
           </select>
-
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tipo da transação
+          </label>
           <select
             value={tipoTransacao}
             onChange={(e) =>

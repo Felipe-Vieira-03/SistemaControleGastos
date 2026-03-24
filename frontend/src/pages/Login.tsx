@@ -7,11 +7,12 @@ import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { apiFetch } from "@/services/api";
-import type { Usuario } from "@/lib/types";
+import type { Usuario, UsuarioDecode } from "@/lib/types";
+import { jwtDecode } from "jwt-decode";
+
 
 interface LoginProps {
-  // onLoginSuccess: (usuario: Usuario) => void;
-  onLoginSuccess: () => void;
+  onLoginSuccess: (usuario: Usuario) => void;
   onIrParaCadastro: () => void;
 }
 
@@ -26,20 +27,28 @@ export default function Login({ onLoginSuccess, onIrParaCadastro }: LoginProps) 
     setErro("");
     setLoading(true);
     try {
-      const response = await apiFetch("/Usuario/AuthAsync", {
+      const data = await apiFetch("/Usuario/AuthAsync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      });      
-      if (!response) {
+      });
+
+      if (!data || !data.token) {
         setErro("E-mail ou senha inválidos.");
         return;
       }
-      const data = await response.token;
-      localStorage.setItem("token", data);
-      // const user: Usuario = {email: email};
-      // onLoginSuccess(user);
-      onLoginSuccess()
+      
+      
+      localStorage.setItem("token", data.token);
+      const decoded = JSON.parse(atob(data.token.split('.')[1]));
+      
+      const userTeste: Usuario = {
+        id: decoded.Id,
+        email: decoded.Email,
+        token: data.Token
+      }
+
+      onLoginSuccess(userTeste);
     } catch {
       setErro("Erro ao conectar com o servidor.");
     } finally {

@@ -4,6 +4,13 @@ export interface Usuario {
   token: string;
 }
 
+export interface UsuarioDecode {
+  id: number;
+  email: string;
+  dataCadastro: string;
+  exp: number;
+}
+
 export interface Pessoa {
   id: number;
   nome: string;
@@ -37,4 +44,6 @@ export enum ETipoFinalidade
   Despesa = 1,
   Receita = 2, 
 }
+
+
 
