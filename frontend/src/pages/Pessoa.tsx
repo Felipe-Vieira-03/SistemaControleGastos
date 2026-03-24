@@ -5,29 +5,26 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export default function Pessoa() {
   const [nome, setNome] = useState("");
   const [idade, setIdade] = useState<number | "">("");
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState("");
 
   async function cadastrar(e: React.FormEvent) {
     e.preventDefault();
-    setErro("");
-    setSucesso("");
     setLoading(true);
     try {
       await apiFetch("/Pessoa/CadastrarPessoaAsync", {
         method: "POST",
         body: JSON.stringify({ nome, idade }),
       });
-      setSucesso("Pessoa cadastrada com sucesso!");
+      toast.success("Pessoa cadastrada com sucesso!");
       setNome("");
       setIdade("");
     } catch {
-      setErro("Erro ao cadastrar pessoa.");
+      toast.error("Erro ao cadastrar pessoa.");
     } finally {
       setLoading(false);
     }
@@ -69,9 +66,6 @@ export default function Pessoa() {
                 />
               </Field>
             </FieldGroup>
-
-            {erro && <p className="text-sm text-destructive">{erro}</p>}
-            {sucesso && <p className="text-sm text-green-600">{sucesso}</p>}
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading && <Spinner className="size-4 mr-2" />}

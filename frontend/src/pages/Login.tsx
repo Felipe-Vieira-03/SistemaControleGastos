@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { apiFetch } from "@/services/api";
 import type { Usuario } from "@/lib/types";
 import { Wallet } from "lucide-react";
+import { toast } from "sonner";
 
 interface LoginProps {
   onLoginSuccess: (usuario: Usuario) => void;
@@ -19,11 +20,9 @@ export default function Login({ onLoginSuccess, onIrParaCadastro }: LoginProps) 
   const [email, setEmail] = useState("");
   const [password, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setErro("");
     setLoading(true);
     try {
       const data = await apiFetch("/Usuario/AuthAsync", {
@@ -33,7 +32,7 @@ export default function Login({ onLoginSuccess, onIrParaCadastro }: LoginProps) 
       });
 
       if (!data?.token) {
-        setErro("E-mail ou senha inválidos.");
+        toast.error("E-mail ou senha inválidos.");
         return;
       }
 
@@ -41,7 +40,7 @@ export default function Login({ onLoginSuccess, onIrParaCadastro }: LoginProps) 
       const decoded = JSON.parse(atob(data.token.split(".")[1]));
       onLoginSuccess({ id: decoded.Id, email: decoded.Email, token: data.token });
     } catch {
-      setErro("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     } finally {
       setLoading(false);
     }
@@ -89,8 +88,6 @@ export default function Login({ onLoginSuccess, onIrParaCadastro }: LoginProps) 
                 />
               </Field>
             </FieldGroup>
-
-            {erro && <p className="text-sm text-destructive">{erro}</p>}
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading && <Spinner className="size-4 mr-1" />}

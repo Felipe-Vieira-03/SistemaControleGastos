@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Tag, Plus, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   onNovo?: () => void;
@@ -33,16 +34,26 @@ export default function CategoriaGrid({ onNovo }: Props) {
 
   async function salvarEdicao() {
     if (!editando) return;
-    await apiFetch("/Categoria/EditarCategoriaAsync", { method: "PUT", body: JSON.stringify(editando) });
-    setEditando(null);
-    carregar();
+    try {
+      await apiFetch("/Categoria/EditarCategoriaAsync", { method: "PUT", body: JSON.stringify(editando) });
+      toast.success("Categoria atualizada com sucesso!");
+      setEditando(null);
+      carregar();
+    } catch {
+      toast.error("Erro ao atualizar categoria.");
+    }
   }
 
   async function confirmarDelete() {
     if (!confirmandoDelete) return;
-    await apiFetch(`/Categoria/DeletarCategoriaAsync?categoriaId=${confirmandoDelete.id}`, { method: "DELETE" });
-    setConfirmandoDelete(null);
-    carregar();
+    try {
+      await apiFetch(`/Categoria/DeletarCategoriaAsync?categoriaId=${confirmandoDelete.id}`, { method: "DELETE" });
+      toast.success("Categoria removida com sucesso!");
+      setConfirmandoDelete(null);
+      carregar();
+    } catch {
+      toast.error("Erro ao remover categoria.");
+    }
   }
 
   return (

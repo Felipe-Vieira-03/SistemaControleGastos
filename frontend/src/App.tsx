@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Toaster } from "sonner";
 import {
   LayoutDashboard, Users, Tag, ArrowLeftRight,
   LogOut, User, ChevronRight, Wallet,
@@ -65,27 +66,23 @@ export default function App() {
 
   // Não logado
   if (!usuario) {
-    if (pagina === "login") {
-      return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-          <Login
-            onLoginSuccess={handleLoginSuccess}
-            onIrParaCadastro={() => setPagina("cadastro-usuario")}
-          />
-        </div>
-      );
-    }
-    if (pagina === "cadastro-usuario") {
-      return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-          <CadastroUsuario
-            onCadastroSucesso={() => setPagina("login")}
-            onVoltar={() => setPagina("login")}
-          />
-        </div>
-      );
-    }
-    return <HomeScreen onIrParaLogin={() => setPagina("login")} />;
+    const authContent = pagina === "login" ? (
+      <Login onLoginSuccess={handleLoginSuccess} onIrParaCadastro={() => setPagina("cadastro-usuario")} />
+    ) : pagina === "cadastro-usuario" ? (
+      <CadastroUsuario onCadastroSucesso={() => setPagina("login")} onVoltar={() => setPagina("login")} />
+    ) : (
+      <HomeScreen onIrParaLogin={() => setPagina("login")} />
+    );
+    return (
+      <>
+        <Toaster richColors position="top-right" />
+        {pagina === "home" ? authContent : (
+          <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+            {authContent}
+          </div>
+        )}
+      </>
+    );
   }
 
   // Logado — layout com sidebar
@@ -122,6 +119,8 @@ export default function App() {
   };
 
   return (
+    <>
+    <Toaster richColors position="top-right" />
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Sidebar */}
       <aside className="w-60 shrink-0 bg-slate-900 flex flex-col">
@@ -190,5 +189,6 @@ export default function App() {
         <main className="flex-1 overflow-auto p-6">{renderContent()}</main>
       </div>
     </div>
+    </>
   );
 }

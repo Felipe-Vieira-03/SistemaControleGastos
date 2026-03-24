@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Users, Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   onNovo?: () => void;
@@ -26,16 +27,26 @@ export default function PessoaGrid({ onNovo }: Props) {
 
   async function salvarEdicao() {
     if (!editando) return;
-    await apiFetch("/Pessoa/EditarPessoaAsync", { method: "PUT", body: JSON.stringify(editando) });
-    setEditando(null);
-    carregar();
+    try {
+      await apiFetch("/Pessoa/EditarPessoaAsync", { method: "PUT", body: JSON.stringify(editando) });
+      toast.success("Pessoa atualizada com sucesso!");
+      setEditando(null);
+      carregar();
+    } catch {
+      toast.error("Erro ao atualizar pessoa.");
+    }
   }
 
   async function confirmarDelete() {
     if (!confirmandoDelete) return;
-    await apiFetch(`/Pessoa/DeletarPessoaAsync?pessoaId=${confirmandoDelete.id}`, { method: "DELETE" });
-    setConfirmandoDelete(null);
-    carregar();
+    try {
+      await apiFetch(`/Pessoa/DeletarPessoaAsync?pessoaId=${confirmandoDelete.id}`, { method: "DELETE" });
+      toast.success("Pessoa removida com sucesso!");
+      setConfirmandoDelete(null);
+      carregar();
+    } catch {
+      toast.error("Erro ao remover pessoa.");
+    }
   }
 
   return (

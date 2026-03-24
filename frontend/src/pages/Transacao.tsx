@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import type { Categoria, Pessoa } from "@/lib/types";
 import { EFinalidade, ETipoFinalidade } from "@/lib/types";
+import { toast } from "sonner";
 
 const selectClass =
   "h-8 w-full rounded-lg border border-input bg-white px-2.5 py-1 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 disabled:cursor-not-allowed";
@@ -18,8 +19,6 @@ export default function Transacao() {
   const [categoriaId, setCategoriaId] = useState<number | "">("");
   const [tipoTransacao, setTipoTransacao] = useState<ETipoFinalidade>(ETipoFinalidade.Despesa);
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState("");
 
   const [pessoas, setPessoas] = useState<Pessoa[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -51,22 +50,20 @@ export default function Transacao() {
 
   async function cadastrar(e: React.FormEvent) {
     e.preventDefault();
-    setErro("");
-    setSucesso("");
     setLoading(true);
     try {
       await apiFetch("/Transacao/CadastrarTransacaoAsync", {
         method: "POST",
         body: JSON.stringify({ descricao, valor, pessoaId, categoriaId, tipoTransacao }),
       });
-      setSucesso("Transação cadastrada com sucesso!");
+      toast.success("Transação cadastrada com sucesso!");
       setDescricao("");
       setValor("");
       setPessoaId("");
       setCategoriaId("");
       setTipoTransacao(ETipoFinalidade.Despesa);
     } catch {
-      setErro("Erro ao cadastrar transação.");
+      toast.error("Erro ao cadastrar transação.");
     } finally {
       setLoading(false);
     }
@@ -163,9 +160,6 @@ export default function Transacao() {
                 Pessoa menor de idade: apenas transações de <strong>despesa</strong> são permitidas.
               </p>
             )}
-
-            {erro && <p className="text-sm text-destructive">{erro}</p>}
-            {sucesso && <p className="text-sm text-green-600">{sucesso}</p>}
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading && <Spinner className="size-4 mr-2" />}

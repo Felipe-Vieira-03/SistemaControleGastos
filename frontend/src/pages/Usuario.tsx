@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { apiFetch } from "@/services/api";
 import { Wallet } from "lucide-react";
+import { toast } from "sonner";
 
 interface CadastroUsuarioProps {
   onCadastroSucesso: () => void;
@@ -18,11 +19,9 @@ export default function CadastroUsuario({ onCadastroSucesso, onVoltar }: Cadastr
   const [email, setEmail] = useState("");
   const [SenhaHash, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
 
   async function handleCadastro(e: React.FormEvent) {
     e.preventDefault();
-    setErro("");
     setLoading(true);
     try {
       const response = await apiFetch<boolean>("/Usuario/CadastrarUsuarioAsync", {
@@ -31,12 +30,13 @@ export default function CadastroUsuario({ onCadastroSucesso, onVoltar }: Cadastr
         body: JSON.stringify({ email, SenhaHash }),
       });
       if (!response) {
-        setErro("Erro ao cadastrar. Tente novamente.");
+        toast.error("Erro ao cadastrar. Tente novamente.");
         return;
       }
+      toast.success("Conta criada com sucesso!");
       onCadastroSucesso();
     } catch {
-      setErro("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     } finally {
       setLoading(false);
     }
@@ -84,8 +84,6 @@ export default function CadastroUsuario({ onCadastroSucesso, onVoltar }: Cadastr
                 />
               </Field>
             </FieldGroup>
-
-            {erro && <p className="text-sm text-destructive">{erro}</p>}
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading && <Spinner className="size-4 mr-1" />}

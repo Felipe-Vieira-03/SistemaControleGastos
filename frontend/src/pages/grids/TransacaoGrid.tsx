@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ArrowLeftRight, Plus, Pencil, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   onNovo?: () => void;
@@ -52,16 +53,26 @@ export default function TransacaoGrid({ onNovo }: Props) {
 
   async function salvarEdicao() {
     if (!editando) return;
-    await apiFetch("/Transacao/EditarTransacaoAsync", { method: "PUT", body: JSON.stringify(editando) });
-    setEditando(null);
-    carregar();
+    try {
+      await apiFetch("/Transacao/EditarTransacaoAsync", { method: "PUT", body: JSON.stringify(editando) });
+      toast.success("Transação atualizada com sucesso!");
+      setEditando(null);
+      carregar();
+    } catch {
+      toast.error("Erro ao atualizar transação.");
+    }
   }
 
   async function confirmarDelete() {
     if (!confirmandoDelete) return;
-    await apiFetch(`/Transacao/DeletarTransacaoAsync?transacaoId=${confirmandoDelete.id}`, { method: "DELETE" });
-    setConfirmandoDelete(null);
-    carregar();
+    try {
+      await apiFetch(`/Transacao/DeletarTransacaoAsync?transacaoId=${confirmandoDelete.id}`, { method: "DELETE" });
+      toast.success("Transação removida com sucesso!");
+      setConfirmandoDelete(null);
+      carregar();
+    } catch {
+      toast.error("Erro ao remover transação.");
+    }
   }
 
   const nomePessoa = (id: number) => pessoas.find((p) => p.id === id)?.nome ?? "—";

@@ -6,29 +6,26 @@ import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { EFinalidade } from "@/lib/types";
+import { toast } from "sonner";
 
 export default function Categoria() {
   const [descricaoCategoria, setDescricaoCategoria] = useState("");
   const [finalidade, setFinalidade] = useState<EFinalidade>(EFinalidade.Despesa);
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState("");
 
   async function cadastrar(e: React.FormEvent) {
     e.preventDefault();
-    setErro("");
-    setSucesso("");
     setLoading(true);
     try {
       await apiFetch("/Categoria/CadastrarCategoriaAsync", {
         method: "POST",
         body: JSON.stringify({ descricaoCategoria, finalidade }),
       });
-      setSucesso("Categoria cadastrada com sucesso!");
+      toast.success("Categoria cadastrada com sucesso!");
       setDescricaoCategoria("");
       setFinalidade(EFinalidade.Despesa);
     } catch {
-      setErro("Erro ao cadastrar categoria.");
+      toast.error("Erro ao cadastrar categoria.");
     } finally {
       setLoading(false);
     }
@@ -71,9 +68,6 @@ export default function Categoria() {
                 </select>
               </Field>
             </FieldGroup>
-
-            {erro && <p className="text-sm text-destructive">{erro}</p>}
-            {sucesso && <p className="text-sm text-green-600">{sucesso}</p>}
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading && <Spinner className="size-4 mr-2" />}

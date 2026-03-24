@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="SistemaControleGastos.API/SistemaControleGastos.API.csproj" />
-  <Project Path="SistemaControleGastos.Application/SistemaControleGastos.Application.csproj" />
-  <Project Path="SistemaControleGastos.Domain/SistemaControleGastos.Domain.csproj" />
-  <Project Path="SistemaControleGastos.Infrastructure/SistemaControleGastos.Infrastructure.csproj" />
+  <Project Path="backend/SistemaControleGastos.API/SistemaControleGastos.API.csproj" />
+  <Project Path="backend/SistemaControleGastos.Application/SistemaControleGastos.Application.csproj" />
+  <Project Path="backend/SistemaControleGastos.Domain/SistemaControleGastos.Domain.csproj" />
+  <Project Path="backend/SistemaControleGastos.Infrastructure/SistemaControleGastos.Infrastructure.csproj" />
 </Solution>
